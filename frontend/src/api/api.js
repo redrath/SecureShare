@@ -3,7 +3,7 @@ import store from '../redux/store';
 import { setToken, logout } from '../redux/authSlice';
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000',
+  baseURL: 'https://secureshare-v4gy.onrender.com',
   withCredentials: true,
 });
 
@@ -44,7 +44,7 @@ api.interceptors.response.use(
 
 // Fetch QR code
 export const fetchQR = async (email) => {
-  const response = await fetch(`http://127.0.0.1:8000/get-qr/${email}/`);
+  const response = await fetch(`https://secureshare-v4gy.onrender.com/get-qr/${email}/`);
 
   if (!response.ok) {
     throw new Error('Failed to fetch QR code');

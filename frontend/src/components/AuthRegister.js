@@ -36,7 +36,7 @@ const AuthRegister = () => {
 
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/get-qr/${encodeURIComponent(email)}/`,
+          `https://secureshare-v4gy.onrender.com/get-qr/${encodeURIComponent(email)}/`,
           {
             method: 'GET',
           }
@@ -67,7 +67,7 @@ const AuthRegister = () => {
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/validate-otp/${encodeURIComponent(email)}/`,
+        `https://secureshare-v4gy.onrender.com/validate-otp/${encodeURIComponent(email)}/`,
         {
           method: 'POST',
           headers: {

@@ -3,7 +3,7 @@ import store from '../redux/store';
 import { setToken, logout } from '../redux/authSlice';
 
 const fileapi = axios.create({
-  baseURL: 'http://127.0.0.1:8000',
+  baseURL: 'https://secureshare-v4gy.onrender.com',
   withCredentials: true,
 });
 
