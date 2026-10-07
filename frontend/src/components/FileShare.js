@@ -12,7 +12,7 @@ export default function FileShare() {
   useEffect(() => {
     dispatch(fetchUsers(email));
     dispatch(fetchFileList(email));
-  }, [dispatch]);
+  }, [dispatch,email]);
 
   const handleFileChange = (e) => {
     dispatch(setSelectedFile(e.target.value));
