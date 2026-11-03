@@ -97,3 +97,23 @@ class FileSharingInfo(models.Model):
         related_name='file_sharing_info'
     )
     permission = models.CharField(max_length=255)
+
+
+class E2EEKeyProfile(models.Model):
+    """
+    Public key plus a password-encrypted private-key bundle.
+    The plaintext private key and encryption password must never reach Django.
+    """
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="e2ee_key_profile",
+    )
+    public_key_pem = models.TextField()
+    protected_private_key = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"E2EE keys for {self.user.email}"
