@@ -14,6 +14,7 @@ import SharedFile from './components/SharedFile';
 import FileViewer from './components/FileViewer';
 import Home from './components/Home';
 import RoleGuest from './components/RoleGuest';
+import E2EEFiles from './components/E2EEFiles';
 const App = () => {
   
   return (
@@ -29,6 +30,7 @@ const App = () => {
           <Route path="/roleuser" element={<RoleUser/>} />
           <Route path="/roleguest" element={<RoleGuest/>} />
           <Route path="/fileupload" element={<FileUpload/>} />
+          <Route path="/private-files" element={<E2EEFiles/>} />
           <Route path="/filedownload" element={<FileDownload/>} />
           <Route path="/fileshare" element={<FileShare/>} />
           <Route path="/SharedFile" element={<SharedFile/>} />
