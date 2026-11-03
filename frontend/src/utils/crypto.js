@@ -47,7 +47,7 @@ const pemToBytes = (pem, label) => {
   const body = pem
     .replace(`-----BEGIN ${label}-----`, "")
     .replace(`-----END ${label}-----`, "")
-    .replace(/\\s/g, "");
+    .replace(/\s/g, "");
   return fromBase64(body);
 };
 
