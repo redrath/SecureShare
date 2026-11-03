@@ -210,7 +210,10 @@ export async function unwrapFileKey(encryptedKeyBase64, privateKey = getUnlocked
   );
 }
 
-export async function encryptFileForRecipient(file, recipientPublicKeyPem) {
+export async function encryptFileForRecipients(file, recipients) {
+  if (!Array.isArray(recipients) || recipients.length === 0) {
+    throw new Error("At least one recipient public key is required.");
+  }
   const crypto = webCrypto();
   const fileKey = await generateFileKey();
   const iv = crypto.getRandomValues(new Uint8Array(AES_GCM_IV_LENGTH));
@@ -220,17 +223,31 @@ export async function encryptFileForRecipient(file, recipientPublicKeyPem) {
     fileKey,
     plaintext
   );
-  const encryptedKey = await wrapFileKey(fileKey, recipientPublicKeyPem);
+  const envelopes = await Promise.all(recipients.map(async ({ email, publicKeyPem }) => ({
+    email,
+    encryptedKey: await wrapFileKey(fileKey, publicKeyPem),
+  })));
 
   return {
     ciphertext: toBase64(ciphertext),
     iv: toBase64(iv),
-    encryptedKey,
+    envelopes,
     algorithm: "AES-256-GCM",
     keyWrap: "RSA-OAEP-3072-SHA256",
     version: 1,
     contentType: file.type || "application/pdf",
     originalSize: file.size,
+  };
+}
+
+export async function encryptFileForRecipient(file, recipientPublicKeyPem) {
+  const result = await encryptFileForRecipients(file, [
+    { email: "recipient", publicKeyPem: recipientPublicKeyPem },
+  ]);
+  return {
+    ...result,
+    encryptedKey: result.envelopes[0].encryptedKey,
+    envelopes: undefined,
   };
 }
 
