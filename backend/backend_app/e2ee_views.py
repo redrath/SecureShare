@@ -12,7 +12,7 @@ from .e2ee_auth import E2EEJWTAuthentication
 from .models import E2EEFile, E2EEKeyProfile, E2EERecipientKey, User
 
 
-MAX_ENCRYPTED_FILE_BYTES = 25 * 1024 * 1024
+MAX_ENCRYPTED_FILE_BYTES = 26 * 1024 * 1024
 
 
 def decode_base64(value, field_name):
@@ -53,12 +53,15 @@ class MyE2EEKeysView(E2EEBaseView):
         if len(public_key) > 10000 or len(str(protected_key)) > 50000:
             return Response({"detail": "Key data is too large."}, status=400)
 
-        E2EEKeyProfile.objects.update_or_create(
+        if E2EEKeyProfile.objects.filter(user=request.user).exists():
+            return Response(
+                {"detail": "Encryption keys already exist. Key replacement needs a safe recovery process."},
+                status=409,
+            )
+        E2EEKeyProfile.objects.create(
             user=request.user,
-            defaults={
-                "public_key_pem": public_key,
-                "protected_private_key": protected_key,
-            },
+            public_key_pem=public_key,
+            protected_private_key=protected_key,
         )
         return Response({"message": "Your encryption keys have been saved."}, status=201)
 
@@ -113,6 +116,13 @@ class E2EEFileListCreateView(E2EEBaseView):
         if not E2EEKeyProfile.objects.filter(user=request.user).exists():
             return Response({"detail": "Set up your encryption keys before uploading."}, status=400)
 
+        try:
+            original_size = int(request.data.get("original_size", 0))
+            if original_size < 0:
+                raise ValueError
+        except (TypeError, ValueError):
+            return Response({"detail": "Original file size must be a valid positive number."}, status=400)
+
         with transaction.atomic():
             encrypted_file = E2EEFile.objects.create(
                 owner=request.user,
@@ -120,7 +130,7 @@ class E2EEFileListCreateView(E2EEBaseView):
                 ciphertext=ciphertext,
                 iv=iv,
                 content_type=request.data.get("content_type", "application/octet-stream")[:255],
-                original_size=max(0, int(request.data.get("original_size", 0))),
+                original_size=original_size,
             )
             E2EERecipientKey.objects.create(
                 file=encrypted_file,
