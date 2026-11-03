@@ -2,7 +2,7 @@ import axios from 'axios';
 import store from '../redux/store';
 import { setToken, logout } from '../redux/authSlice';
 
-const fileapi = axios.create({
+export const fileapi = axios.create({
   baseURL: 'https://secureshare-v4gy.onrender.com',
   withCredentials: true,
 });
