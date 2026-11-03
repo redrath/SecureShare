@@ -1,11 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Navbar.css'; // Import CSS for styling
+import '../styles/Navbar.css';
+import { clearUnlockedPrivateKey } from '../utils/crypto';
 
 const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    clearUnlockedPrivateKey();
     // Clear tokens and navigate to login
     document.cookie = "access=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "refresh=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
